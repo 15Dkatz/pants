@@ -34,6 +34,10 @@ class ReverseDepmap(ConsoleTask):
 
   def console_output(self, _):
     dependees_by_target = defaultdict(set)
+    # import pdb
+    # pdb.set_trace()
+    # going through the whole dependency tree
+    # limit through scope here
     for address in self.context.build_graph.inject_specs_closure([DescendantAddresses('')]):
       target = self.context.build_graph.get_target(address)
       # TODO(John Sirois): tighten up the notion of targets written down in a BUILD by a
