@@ -40,7 +40,8 @@ from pants.task.task import Task
 # from contrib.python.src.python.pants.contrib.buildgen.build_file_manipulator import (BuildFileManipulator)
 
 # Example dependees: ./pants dependees src/scala/org/pantsbuild/zinc/analysis
-# a full example would be ./pants meta-rename --from=src/scala/org/pantsbuild/zinc/analysis --to=src/scala/org/pantsbuild/zinc/new_analysis
+# Try: `./pants meta-rename --from=src/scala/org/pantsbuild/zinc/analysis:analysis --to=src/scala/org/pantsbuild/zinc/analysis:new_analysis`
+# something incomplete though - have to rename the directory
 class MetaRename(Task):
   """Rename a target for its dependees"""
 
@@ -62,43 +63,42 @@ class MetaRename(Task):
     self._to = self.get_options().to
 
   def execute(self):
-    self.change_dependency_names()
+    self.change_build_names()
   
-  def change_dependency_names(self):    
+  def change_build_names(self):    
     # TODO considerations: create a build_graph? TODO kwargs necessary as the fourth argument?
-    address=Address.parse(self._from)
-    from_root = ScalaLibrary(name=address.target_name, 
-                               address=address,
+    from_address = Address.parse(self._from)
+    to_address = Address.parse(self._to)
+    self.change_build_name(from_address, from_address.target_name, to_address.target_name)
+
+    # TODO come up with a better name than from_root
+    from_root = ScalaLibrary(name=from_address.target_name, 
+                               address=from_address,
                                build_graph=[],
                                **{})
 
     dependency_graph = self.dependency_graph()
-    dependee_addresses = self.get_dependees(dependency_graph, [from_root])
-    deps = defaultdict(list)
+    dependee_addresses = dependency_graph[from_root]
     for address in dependee_addresses:
-      self.change_dependency_name(address, self._from, self._to)
+      self.change_build_name(address, from_address.target_name, to_address.target_name)
 
   # default scope is global
   def dependency_graph(self, scope=''):
-    dependency_graph=defaultdict(set)
+    dependency_graph = defaultdict(set)
     for address in self.context.build_graph.inject_specs_closure([DescendantAddresses(scope)]):
       target = self.context.build_graph.get_target(address)
       for dependency in target.dependencies:
         dependency_graph[dependency].add(address)
     return dependency_graph
 
-  def get_dependees(self, dependency_graph, roots):
-    known_dependents = set()
-    for target in roots:
-      known_dependents.update(dependency_graph[target])
-    return known_dependents
-
-  def change_dependency_name(self, address, old_name, new_name):
-    print("address: {}, old_name: {}, {}".format(address, old_name, new_name))
+  # TODO: limit this renaming to names/dependencies so that it doesn't rename more than it should
+  def change_build_name(self, address, old_name, new_name):
+    print("address: {}, old_name: {}, new_name: {}".format(address, old_name, new_name))
     # TODO print errors for a bad dependency name that does not exist
+    # how to do this properly? can't just do a string replace
+    build_file = address.spec_path + '/BUILD'
 
-    build_file = address.reference() + '/BUILD'
-
+    # OK to manually overwrite BUILD files? 
     with open(build_file, 'r') as f:
       source = f.read()
 
@@ -107,10 +107,5 @@ class MetaRename(Task):
     with open(build_file, 'w') as new_build:
       new_build.write(new_source)
 
-    # change old_name to new_name in the address's BUILD file with open/read/write
     # TODO come up with a concise message to denote that the address name changed, typical to print this success message?
-
-    print('build_file ' + build_file)
-
-    # read the relative BUILD file and replace the old dependency name with the new one
-    # pdb.set_trace() 
+    # print('build_file ' + build_file)
