@@ -15,6 +15,9 @@
 # include this as a consideration in a follow up to the PR
 
 # TODO lint and test
+# TODO add docs for each method
+# TODO update the BUILD file for where this task ends up
+# TODO Have to do read and writes similar to build_file_manipulator class?
 
 from __future__ import (absolute_import, division, generators, nested_scopes, print_function,
                         unicode_literals, with_statement)
@@ -33,8 +36,9 @@ from pants.backend.jvm.targets.scala_library import ScalaLibrary
 from pants.build_graph.address import Address
 from pants.base.specs import DescendantAddresses
 from pants.task.task import Task
+# TODO how to import htis?
+# from contrib.python.src.python.pants.contrib.buildgen.build_file_manipulator import (BuildFileManipulator)
 
-# TODO would it be useful to instantiate a dependees or dependencies class?
 # Example dependees: ./pants dependees src/scala/org/pantsbuild/zinc/analysis
 # a full example would be ./pants meta-rename --from=src/scala/org/pantsbuild/zinc/analysis --to=src/scala/org/pantsbuild/zinc/new_analysis
 class MetaRename(Task):
@@ -69,10 +73,10 @@ class MetaRename(Task):
                                **{})
 
     dependency_graph = self.dependency_graph()
-    dependees = self.get_dependees(dependency_graph, [from_root])
+    dependee_addresses = self.get_dependees(dependency_graph, [from_root])
     deps = defaultdict(list)
-    for dependee in dependees:
-      self.change_dependency_name(dependee, self._from, self._to)
+    for address in dependee_addresses:
+      self.change_dependency_name(address, self._from, self._to)
 
   # default scope is global
   def dependency_graph(self, scope=''):
@@ -80,7 +84,7 @@ class MetaRename(Task):
     for address in self.context.build_graph.inject_specs_closure([DescendantAddresses(scope)]):
       target = self.context.build_graph.get_target(address)
       for dependency in target.dependencies:
-        dependency_graph[dependency].add(target)
+        dependency_graph[dependency].add(address)
     return dependency_graph
 
   def get_dependees(self, dependency_graph, roots):
@@ -89,13 +93,24 @@ class MetaRename(Task):
       known_dependents.update(dependency_graph[target])
     return known_dependents
 
-  def change_dependency_name(self, dependency, old_name, new_name):
-    # rename old_name to new_name in dependency
-    # TODO come up with a concise message to denote that the dependency name changed
-    print("dependency: {}, old_name: {}, new_name".format(dependency, old_name, new_name))
+  def change_dependency_name(self, address, old_name, new_name):
+    print("address: {}, old_name: {}, {}".format(address, old_name, new_name))
+    # TODO print errors for a bad dependency name that does not exist
 
-    # here's the add
-    # new_name is a str though. Will this work?
-    # dependency.add(new_name)
+    build_file = address.reference() + '/BUILD'
 
-    # pdb.set_trace()
+    with open(build_file, 'r') as f:
+      source = f.read()
+
+    new_source = source.replace(old_name, new_name)
+
+    with open(build_file, 'w') as new_build:
+      new_build.write(new_source)
+
+    # change old_name to new_name in the address's BUILD file with open/read/write
+    # TODO come up with a concise message to denote that the address name changed, typical to print this success message?
+
+    print('build_file ' + build_file)
+
+    # read the relative BUILD file and replace the old dependency name with the new one
+    # pdb.set_trace() 
