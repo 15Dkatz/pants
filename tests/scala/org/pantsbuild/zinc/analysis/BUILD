@@ -10,7 +10,7 @@ junit_tests(
     '3rdparty:jsr305',
     '3rdparty:junit',
     '3rdparty:scalatest',
-    'src/scala/org/pantsbuild/zinc/analysis',
+    'src/scala/org/pantsbuild/zinc/new_analysis',
     'src/scala/org/pantsbuild/zinc/cache',
   ],
   strict_deps=True,

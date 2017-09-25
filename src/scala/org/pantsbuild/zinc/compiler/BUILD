@@ -15,7 +15,7 @@ scala_library(
     '3rdparty/jvm/org/scala-sbt:zinc',
     '3rdparty:guava',
     '3rdparty:jsr305',
-    'src/scala/org/pantsbuild/zinc/analysis',
+    'src/scala/org/pantsbuild/zinc/new_analysis',
     'src/scala/org/pantsbuild/zinc/cache',
     'src/scala/org/pantsbuild/zinc/options',
     'src/scala/org/pantsbuild/zinc/util',
