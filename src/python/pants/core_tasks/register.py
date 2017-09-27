@@ -24,7 +24,9 @@ from pants.core_tasks.targets_help import TargetsHelp
 from pants.core_tasks.what_changed import WhatChanged
 from pants.goal.goal import Goal
 from pants.goal.task_registrar import TaskRegistrar as task
+# TODO remove MetaRename logic from buildozer branch
 from pants.build_graph.meta_rename import MetaRename
+from pants.core_tasks.buildozer import Buildozer
 
 
 def register_goals():
@@ -101,3 +103,6 @@ def register_goals():
                                                                                    first=True)
   # Register a task to rename a target.
   task(name='meta-rename', action=MetaRename).install()
+
+  # Register the buildozer task
+  task(name='buildozer', action=Buildozer).install()
