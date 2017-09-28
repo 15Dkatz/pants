@@ -15,8 +15,14 @@ class Buildozer(Task):
   """Enables interaction with the Buildozer Go binary
   
   Behavior:
-  2. `./pants buildozer --add=<dependency>` will add the specified dependency to the relative BUILD file.
-  2. `./pants buildozer --remove=<dependency>` will remove the specified dependency from the relative BUILD file.
+  1. `./pants buildozer --add=<dependency> --location=<directory>` 
+      will add the dependency to the location's relative BUILD file.
+  2. `./pants buildozer --remove=<dependency> --location=<directory>` 
+      will remove the dependency from the location's relative BUILD file.
+  3. `./pants buildozer --command=<custom-command>` 
+      will execute a custom buildozer command
+
+  Example: `./pants buildozer --add=a/b/c --location=//tmp:tmp`
   """
 
   @classmethod
@@ -24,6 +30,7 @@ class Buildozer(Task):
       register('--add', type=str, advanced=True, default=None, help='The dependency to add')
       register('--remove', type=str, advanced=True, default=None, help='The dependency to remove')
       register('--location', type=str, advanced=True, default=None, help='The target location')
+      register('--command', type=str, advanced=True, default=None, help='Custom buildozer command')
       # TODO add advanced command option for an advanced buildozer user
 
   def __init__(self, *args, **kwargs):
@@ -40,22 +47,31 @@ class Buildozer(Task):
     if self.options.remove:
       self.remove_dependency()
 
+    if self.options.command:
+      self.execute_custom_command()
+
   def add_dependency(self):
-    self.execute_buildozer_binary('add dependencies ' + self.options.add, self.options.location)
+    self.execute_buildozer_script('add dependencies ' + self.options.add, self.options.location)
   
   def remove_dependency(self):
-    self.execute_buildozer_binary('remove dependencies ' + self.options.remove, self.options.location)
+    self.execute_buildozer_script('remove dependencies ' + self.options.remove, self.options.location)
 
-  def execute_buildozer_binary(self, command, directory):
-    # TODO replace the binary with the fetched image or one on the pants repo
+  def execute_custom_command(self):
+    self.execute_buildozer_script(self.options.command)
+
+  
+  def execute_buildozer_script(self, command, directory=None):
+    # TODO: include in PR description - replace the binary with the fetched image or one on the pants repo
     # what is the working directory when you run a Pants process?
     
     # shell option is needed for permissions
     # TODO: research a different option
+    buildozer_command = '/Users/davidkatz/buildozer \'{}\'{}'.format(command, ' ' + directory if directory else '')
+
     try:
-       subprocess.Popen('/Users/davidkatz/buildozer \'{}\' {}'.format(command, directory), shell=True)
+       subprocess.Popen(buildozer_command, shell=True)
     except subprocess.CalledProcessError as err:
-      raise TaskError('{} ... exited non-zero ({}).').format(cmd, err.returncode)
+      raise TaskError('{} ... exited non-zero ({}).').format(buildozer_command, err.returncode)
     
 
 
