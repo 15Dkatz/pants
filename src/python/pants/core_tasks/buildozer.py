@@ -22,7 +22,8 @@ class Buildozer(Task):
   3. `./pants buildozer --command=<custom-command>` 
       will execute a custom buildozer command
 
-  Example: `./pants buildozer --add=a/b/c --location=//tmp:tmp`
+  Example: `./pants buildozer --add=a/b/c tmp:tmp`
+  Note that this assumes a tmp directory has been created with a BUILD file.
   """
 
   @classmethod
@@ -39,7 +40,7 @@ class Buildozer(Task):
     self.options = self.get_options()
     
   def execute(self):
-    # if no location specified, raise a warning
+    # if no location specified, raise a warning?
 
     if self.options.add:
       self.add_dependency()
@@ -51,22 +52,27 @@ class Buildozer(Task):
       self.execute_custom_command()
 
   def add_dependency(self):
-    self.execute_buildozer_script('add dependencies ' + self.options.add, self.options.location)
+    self.execute_buildozer_script('add dependencies ' + self.options.add)
   
   def remove_dependency(self):
-    self.execute_buildozer_script('remove dependencies ' + self.options.remove, self.options.location)
+    self.execute_buildozer_script('remove dependencies ' + self.options.remove)
 
   def execute_custom_command(self):
     self.execute_buildozer_script(self.options.command)
-
+    # should this error if the custom script fails
   
-  def execute_buildozer_script(self, command, directory=None):
+  def execute_buildozer_script(self, command):
     # TODO: include in PR description - replace the binary with the fetched image or one on the pants repo
     # what is the working directory when you run a Pants process?
     
     # shell option is needed for permissions
     # TODO: research a different option
-    buildozer_command = '/Users/davidkatz/buildozer \'{}\'{}'.format(command, ' ' + directory if directory else '')
+    buildozer_command = '/Users/davidkatz/buildozer \'{}\'{}'.format(
+      command, ' ' + self.options.location if 'location' in self.options else ''
+    )
+
+    print('buildozer_command')
+    print(buildozer_command)
 
     try:
        subprocess.Popen(buildozer_command, shell=True)
@@ -86,10 +92,12 @@ class Buildozer(Task):
 
 # buildozer-command option
 
-
 # example: use tmp/BUILD
 
 # example add:
 #  ./pants buildozer --add="e/d" --location="//tmp:tmp"
 
 # example remove:
+
+# TODO
+# - test and lint
