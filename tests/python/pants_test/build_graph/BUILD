@@ -143,9 +143,13 @@ python_tests(
   name = 'meta-rename',
   sources = ['test_meta_rename.py'],
   dependencies = [
+<<<<<<< HEAD
     'src/python/pants/backend/jvm/targets:java',
     'src/python/pants/build_graph',
     'src/python/pants/util:dirutil',
+=======
+    'src/python/pants/build_graph',
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
     'tests/python/pants_test:base_test',
     'tests/python/pants_test/tasks:task_test_base',
   ]

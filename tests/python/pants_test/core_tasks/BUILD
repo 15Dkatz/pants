@@ -13,6 +13,15 @@ python_tests(
 )
 
 python_tests(
+  name='buildozer',
+  sources=['test_buildozer.py'],
+  dependencies=[
+    'src/python/pants/core_tasks',
+    'tests/python/pants_test/tasks:task_test_base',
+  ]
+)
+
+python_tests(
   name = 'deferred_sources_mapper_integration',
   sources = ['test_deferred_sources_mapper_integration.py'],
   dependencies = [

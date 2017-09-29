@@ -8,13 +8,22 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 from collections import defaultdict
 
 from pants.backend.jvm.targets.scala_library import ScalaLibrary
+<<<<<<< HEAD
 from pants.base.specs import DescendantAddresses
 from pants.build_graph.address import Address
+=======
+from pants.build_graph.address import Address
+from pants.base.specs import DescendantAddresses
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
 from pants.task.task import Task
 
 class MetaRename(Task):
   """Rename a target for its dependants
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
   Provides a mechanism for renaming the target's name within its local BUILD file.
   Also renames the target for its addresses wherever it's specified as a dependency.
   """
@@ -22,7 +31,11 @@ class MetaRename(Task):
   @classmethod
   def register_options(cls, register):
     super(MetaRename, cls).register_options(register)
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
     register('--from', type=str, advanced=True, default=None, help='The old dependency name to change')
     register('--to', type=str, advanced=True, default=None, help='The new name for the dependency')
 
@@ -53,7 +66,10 @@ class MetaRename(Task):
 
     for address in self.context.build_graph.inject_specs_closure([DescendantAddresses(scope)]):
       target = self.context.build_graph.get_target(address)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
       for dependency in target.dependencies:
         dependency_graph[dependency].add(address)
 
@@ -65,5 +81,11 @@ class MetaRename(Task):
 
     new_source = source.replace(old_name, new_name)
 
+<<<<<<< HEAD
     with open(_file, 'w') as new_file:
       new_file.write(new_source)
+=======
+    with open(_file, 'w') as new_build:
+      new_build.write(new_source)
+
+>>>>>>> 79392c007864a891cb0d8ed5103b9310f6273097
