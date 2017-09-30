@@ -29,18 +29,13 @@ class BuildozerTest(TaskTestBase):
 
     self.targets = self._prepare_dependencies()
 
-  # test add
-  # test add on adding dependencies
-  # have a helper function to parse the build files for depenencies
-  # assert that the dependency was added
-
   def test_add_dependency(self):
     mock_dependency = '/a/b/c'
     build_file = self.build_root + '/b/BUILD'
 
     self._clean_build_file(build_file)
     self._test_buildozer_execution({ 'add': mock_dependency, 'location': '//b:b' })
-    self.assertIn(mock_dependency, self._build_dependencies(build_file))
+    self.assertIn(mock_dependency, self._build_file_dependencies(build_file))
 
   def test_remove_dependency(self):
     dependency_to_remove = 'a'    
@@ -48,15 +43,13 @@ class BuildozerTest(TaskTestBase):
 
     self._clean_build_file(build_file)
     self._test_buildozer_execution({ 'remove': dependency_to_remove, 'location': '//b:b' })    
-    self.assertNotIn(dependency_to_remove, self._build_dependencies(build_file))
+    self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
+
+  # do this in a followup
 
   def _test_buildozer_execution(self, options):
     self.set_options(**options)
     self.create_task(self.context(target_roots=self.targets)).execute()
-
-  # test custom command
-
-  # test that custom -help was executed without error ?
 
   def _prepare_dependencies(self):
     targets = {}
@@ -75,7 +68,7 @@ class BuildozerTest(TaskTestBase):
     with open(build_file, 'w') as new_file:
       new_file.write(new_source)
   
-  def _build_dependencies(self, build_file):
+  def _build_file_dependencies(self, build_file):
     with open(build_file) as f:
       source = f.read()
 
@@ -89,3 +82,5 @@ class BuildozerTest(TaskTestBase):
 
 # TODO
 # split the modification of the contrib into a separate commit
+# place into the contrib folder, and remove the goal from register.py
+# include custom-command feature in a follow-up
