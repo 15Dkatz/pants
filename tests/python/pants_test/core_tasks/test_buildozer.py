@@ -8,10 +8,10 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 import re
 
 from pants.backend.jvm.targets.java_library import JavaLibrary
-from pants.build_graph.address import Address
 from pants.build_graph.build_file_aliases import BuildFileAliases
 from pants.core_tasks.buildozer import Buildozer
 from pants_test.tasks.task_test_base import TaskTestBase
+
 
 class BuildozerTest(TaskTestBase):
   """Test the buildozer tool"""
@@ -44,8 +44,6 @@ class BuildozerTest(TaskTestBase):
     self._clean_build_file(build_file)
     self._test_buildozer_execution({ 'remove': dependency_to_remove, 'location': '//b:b' })    
     self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
-
-  # do this in a followup
 
   def _test_buildozer_execution(self, options):
     self.set_options(**options)
@@ -83,4 +81,5 @@ class BuildozerTest(TaskTestBase):
 # TODO
 # split the modification of the contrib into a separate commit
 # place into the contrib folder, and remove the goal from register.py
+# Figure out how to place it into the contrib folder by moving it there
 # include custom-command feature in a follow-up

@@ -13,6 +13,7 @@ python_library(
     'src/python/pants/base:generator',
     'src/python/pants/base:revision',
     'src/python/pants/base:workunit',
+    'src/python/pants/binaries:binary_util',
     'src/python/pants/build_graph',
     'src/python/pants/goal',
     'src/python/pants/goal:task_registrar',

@@ -11,6 +11,7 @@ from pants.base.exceptions import TaskError
 from pants.binaries.binary_util import BinaryUtil
 from pants.task.task import Task
 
+
 class Buildozer(Task):
   """Enables interaction with the Buildozer Go binary
   
@@ -25,9 +26,10 @@ class Buildozer(Task):
 
   @classmethod
   def register_options(cls, register):
-      register('--add', type=str, advanced=True, default=None, help='The dependency to add')
-      register('--remove', type=str, advanced=True, default=None, help='The dependency to remove')
-      register('--location', type=str, advanced=True, default=None, help='The target location')
+    register('--version', advanced=True, fingerprint=True, default='0.4.5', help='Version of buildozer.')
+    register('--add', type=str, advanced=True, default=None, help='The dependency to add')
+    register('--remove', type=str, advanced=True, default=None, help='The dependency to remove')
+    register('--location', type=str, advanced=True, default=None, help='The target location')
 
   def __init__(self, *args, **kwargs):
     super(Buildozer, self).__init__(*args, **kwargs)
@@ -50,10 +52,13 @@ class Buildozer(Task):
   # follow-up: add the custom command
   # def execute_custom_command(self):
   #   self.execute_buildozer_script(self.options.command)
-
   def execute_buildozer_script(self, command):
     # TODO: include in PR description - replace the binary with the fetched image or one on the pants repo
-    buildozer_command = ['/Users/davidkatz/buildozer', command]
+    # buildozer_command = ['/Users/davidkatz/buildozer', command]
+    buildozer_command = [
+      BinaryUtil.Factory.create().select_script('scripts/buildozer', self.options.version, 'buildozer'),
+      command
+    ]
 
     if self.options.get('location'):
       buildozer_command.append(self.options.location)
