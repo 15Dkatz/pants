@@ -5,7 +5,10 @@
 from __future__ import (absolute_import, division, generators, nested_scopes, print_function,
                         unicode_literals, with_statement)
 
+import re
+
 from pants.backend.jvm.targets.java_library import JavaLibrary
+from pants.build_graph.address import Address
 from pants.build_graph.build_file_aliases import BuildFileAliases
 from pants.core_tasks.buildozer import Buildozer
 from pants_test.tasks.task_test_base import TaskTestBase
@@ -32,38 +35,34 @@ class BuildozerTest(TaskTestBase):
   # assert that the dependency was added
 
   def test_add_dependency(self):
+    # turn the similarities between test_add and test_remove into a private
+    # similar function _test_buildozer_function()
     mock_dependency = '/a/b/c'
 
-    # way to programmatically get the right directory location?
-    # TODO oneline
-    # location = './' 
-    # set an add option with the mock dependency
-
-    # where is the BUILD file?
-    # look at how create_library is implemented
-
-    # how to get the relative directory
-    build_path = self.build_root + '/b/'
-    build_file = build_path + 'BUILD'
+    # TODO inline build_path
+    build_file = self.build_root + '/b/' + 'BUILD'
 
     self._clean_build_file(build_file)
+    # TODO turn the options into a paramater for a private helper function
     self.set_options(**{ 'add': mock_dependency, 'location': '//b:b' })
-
-    # TODO figure out how to stub and make it get_buildroot() return '/'
 
     buildozer_task = self.create_task(self.context(target_roots=self.targets))
     buildozer_task.execute()
 
-    # testing TODO: remove
-    with open(build_file, 'r') as f:
-      source = f.read()
 
-    print("source: \n" + source)
+    # with open(build_file, 'r') as f:
+    #   source = f.read()
+
+    dependencies = self._build_dependencies(build_file)
+
+
+
+    # print("source: \n" + source)
 
     # testing TODO: remove
     # look for a working build file directory
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
 
     # parce the dependencies with a private function
 
@@ -93,12 +92,32 @@ class BuildozerTest(TaskTestBase):
     with open(build_file) as f:
       source = f.read()
 
-    # print("source: \n" + source)
     new_source = source.replace('u\'', '\'')
     
     with open(build_file, 'w') as new_file:
       new_file.write(new_source)
   
+  def _build_dependencies(self, build_file):
+    with open(build_file) as f:
+      source = f.read()
+    
+    # TODO inline where possible
+    pattern = re.compile('dependencies[^]]*]')
+    dependency_pattern = pattern.findall(source)
+    # TODO might need a more powerful alternative to remove whitespace
+    no_whitespace_pattern =  dependency_pattern[0].replace(" ", "")
+    # TODO remove u' occurences
+    split_dependencies = no_whitespace_pattern.split('\n')
+
+
+
+    # dependencies[^]]*]
+    # 'java_library(\n    name = "b",\n    dependencies = [\n        "/a/b/c",\n        "a",\n    ],\n    sources = ["B.java"],\n)\n'
+    # address = Address.parse(build_path)
+    # target = self.target(build_path)
+
+    import pdb
+    pdb.set_trace()
 
 # *********
 

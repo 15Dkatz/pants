@@ -16,6 +16,7 @@ python_tests(
   name='buildozer',
   sources=['test_buildozer.py'],
   dependencies=[
+    'src/python/pants/build_graph',
     'src/python/pants/core_tasks',
     'tests/python/pants_test/tasks:task_test_base',
   ]
