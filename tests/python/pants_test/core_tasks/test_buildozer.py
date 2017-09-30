@@ -43,19 +43,29 @@ class BuildozerTest(TaskTestBase):
     # look at how create_library is implemented
 
     # how to get the relative directory
-    self.set_options(**{ 'add': mock_dependency, 'location': './' })
+    build_path = self.build_root + '/b/'
+    build_file = build_path + 'BUILD'
+
+    self._clean_build_file(build_file)
+    self.set_options(**{ 'add': mock_dependency, 'location': '//b:b' })
+
+    # TODO figure out how to stub and make it get_buildroot() return '/'
 
     buildozer_task = self.create_task(self.context(target_roots=self.targets))
     buildozer_task.execute()
 
     # testing TODO: remove
-    with open('./BUILD', 'r') as f:
+    with open(build_file, 'r') as f:
       source = f.read()
+
+    print("source: \n" + source)
 
     # testing TODO: remove
     # look for a working build file directory
     import pdb
     pdb.set_trace()
+
+    # parce the dependencies with a private function
 
     # self assert that it was actually added
     self.assertTrue(True)
@@ -76,6 +86,19 @@ class BuildozerTest(TaskTestBase):
 
     return targets.values()
 
+  # convert the unicode characters to normal blanks
+  # replace unicode character encodings with normal apostrophes
+  # necessary in order for buildozer to properly parse the BUILD file
+  def _clean_build_file(self, build_file):
+    with open(build_file) as f:
+      source = f.read()
+
+    # print("source: \n" + source)
+    new_source = source.replace('u\'', '\'')
+    
+    with open(build_file, 'w') as new_file:
+      new_file.write(new_source)
+  
 
 # *********
 

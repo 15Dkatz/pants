@@ -6,7 +6,8 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
                         unicode_literals, with_statement)
 import subprocess
 
-from pants.backend.go.targets.go_binary import GoBinary
+# TODO remove the moving of the go binary
+from pants.base.build_environment import get_buildroot
 from pants.base.exceptions import TaskError
 from pants.binaries.binary_util import BinaryUtil
 from pants.task.task import Task
@@ -65,21 +66,30 @@ class Buildozer(Task):
     # TODO: include in PR description - replace the binary with the fetched image or one on the pants repo
     # what is the working directory when you run a Pants process?
     
+    # import pdb
+    # pdb.set_trace()
     # shell option is needed for permissions
     # TODO: research a different option
-    buildozer_command = '/Users/davidkatz/buildozer \'{}\'{}'.format(
-      command, ' ' + self.options.location if 'location' in self.options else ''
-    )
+    # buildozer_command = '/Users/davidkatz/buildozer \'{}\'{}'.format(
+    #   command, ' ' + self.options.location if self.options.get('location') else ''
+    # )
 
-    print('buildozer_command')
-    print(buildozer_command)
+    buildozer_command = ['/Users/davidkatz/buildozer', command]
+    # self.options.location if self.options.get('location')
+    if self.options.get('location'):
+      buildozer_command.append(self.options.location)
+
+    # import pdb
+    # pdb.set_trace()
+
+    # print('buildozer_command')
+    # print(buildozer_command)
 
     try:
-       subprocess.Popen(buildozer_command, shell=True)
+       subprocess.check_call(buildozer_command, cwd=get_buildroot())
+      #  subprocess.Popen(buildozer_command, cwd=get_buildroot())
     except subprocess.CalledProcessError as err:
-      raise TaskError('{} ... exited non-zero ({}).').format(buildozer_command, err.returncode)
-    
-
+      raise TaskError('{} ... exited non-zero ({}).'.format(buildozer_command, err.returncode))
 
 # NOTES | DIRTY| TODO REMOVE ******************
 
