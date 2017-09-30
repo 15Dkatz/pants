@@ -35,47 +35,28 @@ class BuildozerTest(TaskTestBase):
   # assert that the dependency was added
 
   def test_add_dependency(self):
-    # turn the similarities between test_add and test_remove into a private
-    # similar function _test_buildozer_function()
     mock_dependency = '/a/b/c'
-
-    # TODO inline build_path
-    build_file = self.build_root + '/b/' + 'BUILD'
+    build_file = self.build_root + '/b/BUILD'
 
     self._clean_build_file(build_file)
-    # TODO turn the options into a paramater for a private helper function
-    self.set_options(**{ 'add': mock_dependency, 'location': '//b:b' })
+    self._test_buildozer_execution({ 'add': mock_dependency, 'location': '//b:b' })
+    self.assertIn(mock_dependency, self._build_dependencies(build_file))
 
-    buildozer_task = self.create_task(self.context(target_roots=self.targets))
-    buildozer_task.execute()
+  def test_remove_dependency(self):
+    dependency_to_remove = 'a'    
+    build_file = self.build_root + '/b/BUILD'
 
+    self._clean_build_file(build_file)
+    self._test_buildozer_execution({ 'remove': dependency_to_remove, 'location': '//b:b' })    
+    self.assertNotIn(dependency_to_remove, self._build_dependencies(build_file))
 
-    # with open(build_file, 'r') as f:
-    #   source = f.read()
-
-    dependencies = self._build_dependencies(build_file)
-
-
-
-    # print("source: \n" + source)
-
-    # testing TODO: remove
-    # look for a working build file directory
-    # import pdb
-    # pdb.set_trace()
-
-    # parce the dependencies with a private function
-
-    # self assert that it was actually added
-    self.assertTrue(True)
-
-  # test remove
+  def _test_buildozer_execution(self, options):
+    self.set_options(**options)
+    self.create_task(self.context(target_roots=self.targets)).execute()
 
   # test custom command
 
   # test that custom -help was executed without error ?
-
-  # need to be able to import the Go Binary in the testing environment
 
   def _prepare_dependencies(self):
     targets = {}
@@ -85,9 +66,6 @@ class BuildozerTest(TaskTestBase):
 
     return targets.values()
 
-  # convert the unicode characters to normal blanks
-  # replace unicode character encodings with normal apostrophes
-  # necessary in order for buildozer to properly parse the BUILD file
   def _clean_build_file(self, build_file):
     with open(build_file) as f:
       source = f.read()
@@ -100,24 +78,10 @@ class BuildozerTest(TaskTestBase):
   def _build_dependencies(self, build_file):
     with open(build_file) as f:
       source = f.read()
-    
-    # TODO inline where possible
-    pattern = re.compile('dependencies[^]]*]')
-    dependency_pattern = pattern.findall(source)
-    # TODO might need a more powerful alternative to remove whitespace
-    no_whitespace_pattern =  dependency_pattern[0].replace(" ", "")
-    # TODO remove u' occurences
-    split_dependencies = no_whitespace_pattern.split('\n')
 
+    dependencies = re.compile('dependencies\ =\ \[([^]]*)').findall(source)
 
-
-    # dependencies[^]]*]
-    # 'java_library(\n    name = "b",\n    dependencies = [\n        "/a/b/c",\n        "a",\n    ],\n    sources = ["B.java"],\n)\n'
-    # address = Address.parse(build_path)
-    # target = self.target(build_path)
-
-    import pdb
-    pdb.set_trace()
+    return ''.join(dependencies[0].replace('\"', '').split()).split(',') if len(dependencies) > 0 else dependencies
 
 # *********
 
