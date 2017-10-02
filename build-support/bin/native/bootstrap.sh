@@ -11,7 +11,7 @@
 # Exposes:
 # + calculate_current_hash: Calculates the current native engine version hash and echoes it to
 #                           stdout.
-# + bootstrap_native_code: Builds target-specific native engine binaries.
+# + bootstrap_native_code: Builds native engine binaries.
 
 REPO_ROOT=$(cd $(dirname "${BASH_SOURCE[0]}") && cd ../../.. && pwd -P)
 source ${REPO_ROOT}/build-support/common.sh
@@ -62,13 +62,11 @@ function calculate_current_hash() {
 
 function _ensure_cffi_sources() {
   # N.B. Here we assume that higher level callers have already setup the pants' venv and $PANTS_SRCPATH.
-  PYTHONPATH="${PANTS_SRCPATH}:${PYTHONPATH}" python "${CFFI_BOOTSTRAPPER}" "$@"
+  PYTHONPATH="${PANTS_SRCPATH}:${PYTHONPATH}" python "${CFFI_BOOTSTRAPPER}" "${NATIVE_ROOT}/src/cffi" >&2
 }
 
 function _ensure_build_prerequisites() {
-  # Control a pants-specific rust toolchain, optionally ensuring the given target toolchain is
-  # installed.
-  local readonly target=$1
+  # Control a pants-specific rust toolchain.
 
   export CARGO_HOME=${CACHE_ROOT}/rust-toolchain
   export RUSTUP_HOME=${CARGO_HOME}
@@ -84,31 +82,32 @@ function _ensure_build_prerequisites() {
     ${RUSTUP_HOME}/bin/rustup override set stable 1>&2
   fi
 
-  if [[ -n "${target}" ]]
-  then
-    if ! ${RUSTUP_HOME}/bin/rustup target list | grep -E "${target} \((default|installed)\)" &> /dev/null
-    then
-      ${RUSTUP_HOME}/bin/rustup target add ${target}
-    fi
+  if [[ ! -x "${CARGO_HOME}/bin/protoc-gen-rust" ]]; then
+    "${CARGO_HOME}/bin/cargo" install protobuf
+  fi
+  if [[ ! -x "${CARGO_HOME}/bin/grpc_rust_plugin" ]]; then
+    "${CARGO_HOME}/bin/cargo" install grpcio-compiler
   fi
 }
 
-function _build_native_code() {
-  # Builds the native code, optionally taking an explicit target triple arg, and echos the path of
-  # the built binary.
-  local readonly target=$1
-  _ensure_build_prerequisites ${target}
+function prepare_to_build_native_code() {
+  # Must happen in the pants venv and have PANTS_SRCPATH set.
+
+  _ensure_build_prerequisites
+  _ensure_cffi_sources
+}
+
+function run_cargo() {
+  prepare_to_build_native_code
 
   local readonly cargo="${CARGO_HOME}/bin/cargo"
-  local readonly build_cmd="${cargo} build --manifest-path ${NATIVE_ROOT}/Cargo.toml ${MODE_FLAG}"
-  if [[ -z "${target}" ]]
-  then
-    ${build_cmd} || die
-    echo "${NATIVE_ROOT}/target/${MODE}/libengine.${LIB_EXTENSION}"
-  else
-    ${build_cmd} --target ${target} || echo "FAILED to build for target ${target}"
-    echo "${NATIVE_ROOT}/target/${target}/${MODE}/libengine.${LIB_EXTENSION}"
-  fi
+  "${cargo}" "$@"
+}
+
+function _build_native_code() {
+  # Builds the native code, and echos the path of the built binary.
+  run_cargo build ${MODE_FLAG} --manifest-path ${NATIVE_ROOT}/Cargo.toml || die
+  echo "${NATIVE_ROOT}/target/${MODE}/libengine.${LIB_EXTENSION}"
 }
 
 function bootstrap_native_code() {
@@ -116,12 +115,8 @@ function bootstrap_native_code() {
   # version if needed.
   local native_engine_version="$(calculate_current_hash)"
   local target_binary="${NATIVE_ENGINE_CACHE_TARGET_DIR}/${native_engine_version}/${NATIVE_ENGINE_BINARY}"
-  local cffi_output_dir="${NATIVE_ROOT}/src/cffi"
-  local cffi_env_script="${cffi_output_dir}/${NATIVE_ENGINE_MODULE}.cflags"
   if [ ! -f "${target_binary}" ]
   then
-    _ensure_cffi_sources "${cffi_output_dir}"
-    export CFLAGS="$(cat "${cffi_env_script}")"
     local readonly native_binary="$(_build_native_code)"
 
     # If bootstrapping the native engine fails, don't attempt to run pants
