@@ -38,6 +38,8 @@ class Buildozer(Task):
     self.options = self.get_options()
     
   def execute(self):
+    # import pdb
+    # pdb.set_trace()
     if self.options.add:
       self.add_dependency()
 
@@ -51,10 +53,17 @@ class Buildozer(Task):
     self.execute_buildozer_script('remove dependencies ' + self.options.remove)
 
   def execute_buildozer_script(self, command):
+    # buildozer_command = [
+    #   BinaryUtil.Factory.create().select_script('scripts/buildozer', self.options.version, 'buildozer'),
+    #   command
+    # ]
     buildozer_command = [
-      BinaryUtil.Factory.create().select_script('scripts/buildozer', self.options.version, 'buildozer'),
+      '/Users/davidkatz/buildozer',
       command
     ]
+
+    # import pdb
+    # pdb.set_trace()
 
     if self.options.get('location'):
       buildozer_command.append(self.options.location)

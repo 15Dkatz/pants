@@ -46,8 +46,11 @@ class BuildozerTest(TaskTestBase):
     self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
 
   def _test_buildozer_execution(self, options):
+    # import pdb
+    # pdb.set_trace()
     self.set_options(**options)
     self.create_task(self.context(target_roots=self.targets)).execute()
+    # task.execute()
 
   def _prepare_dependencies(self):
     targets = {}
