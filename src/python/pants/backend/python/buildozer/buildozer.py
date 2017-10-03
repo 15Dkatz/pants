@@ -62,11 +62,13 @@ class Buildozer(Task):
       command
     ]
 
-    # import pdb
-    # pdb.set_trace()
+    
 
     if self.options.get('location'):
       buildozer_command.append(self.options.location)
+
+    import pdb
+    pdb.set_trace()
 
     try:
       subprocess.check_call(buildozer_command, cwd=get_buildroot())
