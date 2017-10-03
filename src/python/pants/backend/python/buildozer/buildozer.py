@@ -1,3 +1,5 @@
+# TODO: move buildozer.py and test_buildozer.py to the contrib module
+
 # coding=utf-8
 # Copyright 2017 Pants project contributors (see CONTRIBUTORS.md).
 # Licensed under the Apache License, Version 2.0 (see LICENSE).
@@ -29,9 +31,11 @@ class Buildozer(Task):
 
   @classmethod
   def register_options(cls, register):
-    register('--version', advanced=True, fingerprint=True, default='0.4.5', help='Version of buildozer.')
-    register('--add-dependencies', type=str, advanced=True, default=None, help='The dependency to add')
-    register('--remove-dependencies', type=str, advanced=True, default=None, help='The dependency to remove')
+    # TODO should the version be not advanced?
+    # TODO is the default not advanced anyway?
+    register('--version', advanced=False, fingerprint=True, default='0.4.5', help='Version of buildozer.')
+    register('--add-dependencies', type=str, advanced=False, default=None, help='The dependency or dependencies to add')
+    register('--remove-dependencies', type=str, advanced=False, default=None, help='The dependency or dependencies to remove')
     # register('--location', type=str, advanced=True, default=None, help='The target location')
 
   def __init__(self, *args, **kwargs):
@@ -42,6 +46,9 @@ class Buildozer(Task):
     # self._executable = BinaryUtil.Factory.create().select_script('scripts/buildozer', self.options.version, 'buildozer')
     
   def execute(self):
+    # import pdb
+    # pdb.set_trace()
+
     if self.options.add_dependencies:
       self.add_dependencies()
 
@@ -49,12 +56,15 @@ class Buildozer(Task):
       self.remove_dependencies()
 
   def add_dependencies(self):
-    self.execute_buildozer_script('add dependencies {}'.format(self.options.add_dependencies))
+    # import pdb
+    # pdb.set_trace()
+
+    self._execute_buildozer_script('add dependencies {}'.format(self.options.add_dependencies))
   
   def remove_dependencies(self):
-    self.execute_buildozer_script('remove dependencies {}'.format(self.options.remove_dependencies))
+    self._execute_buildozer_script('remove dependencies {}'.format(self.options.remove_dependencies))
 
-  def execute_buildozer_script(self, command):
+  def _execute_buildozer_script(self, command):
     # buildozer_command = [self._executable, command]
     # import pdb
     # pdb.set_trace()
@@ -69,6 +79,9 @@ class Buildozer(Task):
     buildozer_command = [
       '/Users/davidkatz/buildozer', command, '//{}:{}'.format(self.address._spec_path, self.address._target_name)
     ]
+
+    # import pdb
+    # pdb.set_trace()
 
     # if self.options.get('location'):
     #   buildozer_command.append(self.options.location)

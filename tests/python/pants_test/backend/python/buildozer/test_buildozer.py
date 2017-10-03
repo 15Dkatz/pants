@@ -34,16 +34,16 @@ class BuildozerTest(TaskTestBase):
     build_file = self.build_root + '/b/BUILD'
 
     self._clean_build_file(build_file)
-    self._test_buildozer_execution({ 'add-dependencies': mock_dependency, 'location': '//b:b' })
+    self._test_buildozer_execution({ 'add_dependencies': mock_dependency })
     self.assertIn(mock_dependency, self._build_file_dependencies(build_file))
 
-  def test_remove_dependency(self):
-    dependency_to_remove = 'a'    
-    build_file = self.build_root + '/b/BUILD'
+  # def test_remove_dependency(self):
+  #   dependency_to_remove = 'a'    
+  #   build_file = self.build_root + '/b/BUILD'
 
-    self._clean_build_file(build_file)
-    self._test_buildozer_execution({ 'remove-dependencies': dependency_to_remove, 'location': '//b:b' })    
-    self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
+  #   self._clean_build_file(build_file)
+  #   self._test_buildozer_execution({ 'remove_dependencies': dependency_to_remove })    
+  #   self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
 
   def _test_buildozer_execution(self, options):
     self.set_options(**options)
@@ -70,6 +70,6 @@ class BuildozerTest(TaskTestBase):
     with open(build_file) as f:
       source = f.read()
 
-    dependencies = re.compile('dependencies\ =\ \[([^]]*)').findall(source)
+    dependencies = re.compile('dependencies+.?=+.?\[([^]]*)').findall(source)
 
-    return ''.join(dependencies[0].replace('\"', '').split()).split(',') if len(dependencies) > 0 else dependencies
+    return ''.join(dependencies[0].replace('\'', '').split()).split(',') if len(dependencies) > 0 else dependencies
