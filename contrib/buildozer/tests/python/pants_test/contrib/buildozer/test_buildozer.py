@@ -9,7 +9,8 @@ import re
 
 from pants.backend.jvm.targets.java_library import JavaLibrary
 from pants.build_graph.build_file_aliases import BuildFileAliases
-from pants.contrib.buildozer.src.python.pants.contrib.buildozer import Buildozer
+# from pants.contrib.buildozer.src.python.pants.contrib.buildozer import Buildozer
+from pants.contrib.buildozer.buildozer import Buildozer
 from pants_test.tasks.task_test_base import TaskTestBase
 
 

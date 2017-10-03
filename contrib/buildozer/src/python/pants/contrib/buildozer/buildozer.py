@@ -57,8 +57,8 @@ class Buildozer(Task):
     self._execute_buildozer_script('remove dependencies {}'.format(self.options.remove_dependencies))
 
   def _execute_buildozer_script(self, command):
-    # buildozer_command = [self._executable, command, '//{}:{}'.format(self.address._spec_path, self.address._target_name]
-    buildozer_command = ['/Users/davidkatz/buildozer' command, '//{}:{}'.format(self.address._spec_path, self.address._target_name]
+    # buildozer_command = [self._executable, command, '//{}:{}'.format(self.address._spec_path, self.address._target_name)]
+    buildozer_command = ['/Users/davidkatz/buildozer', command, '//{}:{}'.format(self.address._spec_path, self.address._target_name)]
 
     try:
       subprocess.check_call(buildozer_command, cwd=get_buildroot())
