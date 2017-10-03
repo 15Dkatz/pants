@@ -74,10 +74,10 @@ class Buildozer(Task):
 # (Pdb) self.context.target_roots[0].address._target_naem
 # *** AttributeError: 'BuildFileAddress' object has no attribute '_target_naem'
 # (Pdb) self.context.target_roots[0].address._target_name
-    # [u'/Users/davidkatz/buildozer', u'add dependencies /a/b/c']
+    # [u'/Users/davidkatz/buildozer', u'add dependencies /a/b/c', u'//b:b']
     # how to turn this into a usable string for target_roots
     buildozer_command = [
-      '/Users/davidkatz/buildozer', command
+      '/Users/davidkatz/buildozer', command, '//{}:{}'.format(self.address._spec_path, self.address._target_name)
     ]
 
     # import pdb

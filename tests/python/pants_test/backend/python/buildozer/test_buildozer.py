@@ -33,21 +33,27 @@ class BuildozerTest(TaskTestBase):
     mock_dependency = '/a/b/c'
     build_file = self.build_root + '/b/BUILD'
 
+    with open(build_file) as bf:
+      source = bf.read()
+
+    # import pdb
+    # pdb.set_trace()
+
     self._clean_build_file(build_file)
     self._test_buildozer_execution({ 'add_dependencies': mock_dependency })
     self.assertIn(mock_dependency, self._build_file_dependencies(build_file))
 
-  # def test_remove_dependency(self):
-  #   dependency_to_remove = 'a'    
-  #   build_file = self.build_root + '/b/BUILD'
+  def test_remove_dependency(self):
+    dependency_to_remove = 'a'    
+    build_file = self.build_root + '/b/BUILD'
 
-  #   self._clean_build_file(build_file)
-  #   self._test_buildozer_execution({ 'remove_dependencies': dependency_to_remove })    
-  #   self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
+    self._clean_build_file(build_file)
+    self._test_buildozer_execution({ 'remove_dependencies': dependency_to_remove })    
+    self.assertNotIn(dependency_to_remove, self._build_file_dependencies(build_file))
 
   def _test_buildozer_execution(self, options):
     self.set_options(**options)
-    self.create_task(self.context(target_roots=self.targets)).execute()
+    self.create_task(self.context(target_roots=self.targets['b'])).execute()
 
   def _prepare_dependencies(self):
     targets = {}
@@ -55,7 +61,7 @@ class BuildozerTest(TaskTestBase):
     targets['a'] = self.create_library('a', 'java_library', 'a', ['A.java'])
     targets['b'] = self.create_library('b', 'java_library', 'b', ['B.java'], dependencies=['a'])
 
-    return targets.values()
+    return targets
 
   def _clean_build_file(self, build_file):
     with open(build_file) as f:
@@ -72,4 +78,5 @@ class BuildozerTest(TaskTestBase):
 
     dependencies = re.compile('dependencies+.?=+.?\[([^]]*)').findall(source)
 
-    return ''.join(dependencies[0].replace('\'', '').split()).split(',') if len(dependencies) > 0 else dependencies
+    # TODO fix
+    return ''.join(dependencies[0].replace('\"', '').split()).split(',') if len(dependencies) > 0 else dependencies
