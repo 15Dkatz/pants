@@ -6,5 +6,9 @@ python_library(
   sources=['register.py'],
   dependencies = [
     'src/python/pants/goal:task_registrar',
-  ]
+  ],
+  provides=contrib_setup_py(
+    name='pantsbuild.pants.contrib.buildozer',
+    description='Buildozer tool to manipulate and edit BUILD files',
+  )
 )

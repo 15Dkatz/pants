@@ -5,8 +5,8 @@ python_tests(
   name='buildozer',
   sources=['test_buildozer.py'],
   dependencies=[
+    'contrib/buildozer/src/python/pants/contrib/buildozer:buildozer',
     'src/python/pants/backend/jvm/targets:java',
-    'src/python/pants/backend/python/buildozer:buildozer',
     'tests/python/pants_test/tasks:task_test_base', 
   ]
 )
