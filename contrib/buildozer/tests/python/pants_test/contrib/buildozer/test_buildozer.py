@@ -48,7 +48,14 @@ class BuildozerTest(TaskTestBase):
 
   def _test_buildozer_execution(self, options):
     self.set_options(**options)
+
+    # import pdb
+    # pdb.set_trace()
+    
+    # TODO: address Yi's breaking test
+    # task = self.create_task(self.context(target_roots=self.targets['b']))
     self.create_task(self.context(target_roots=self.targets['b'])).execute()
+    # task.execute()
 
   def _prepare_dependencies(self):
     targets = {}
