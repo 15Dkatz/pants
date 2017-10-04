@@ -8,7 +8,6 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 from pants.goal.task_registrar import TaskRegistrar as task
 from pants.contrib.buildozer.buildozer import Buildozer
 
-LOOK AT ME
 
 def register_goals():
   task(name='buildozer', action=Buildozer).install('buildozer')

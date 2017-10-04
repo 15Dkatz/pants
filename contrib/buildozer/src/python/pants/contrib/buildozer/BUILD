@@ -1,16 +1,14 @@
 # Copyright 2017 Pants project contributors (see CONTRIBUTORS.md).
 # Licensed under the Apache License, Version 2.0 (see LICENSE).
 
-python_library(
+contrib_plugin(
   name='plugin',
-  sources=['register.py'],
   dependencies=[
-    ':buildozer',
+    ':buildozer'
   ],
-  provides=contrib_setup_py(
-    name='pantsbuild.pants.contrib.buildozer',
-    description='Buildozer tool to manipulate and edit BUILD files',
-  )
+  distribution_name='pantsbuild.pants.contrib.buildozer',
+  description='Buildozer tool to manipulate and edit BUILD files',
+  register_goals=True,
 )
 
 

@@ -62,4 +62,3 @@ def register_goals():
   task(name='setup-py', action=SetupPy).install()
   task(name='py', action=PythonBinaryCreate).install('binary')
   task(name='isort', action=IsortPythonTask).install('fmt')
-  # task(name='buildozer', action=Buildozer).install('buildozer')
