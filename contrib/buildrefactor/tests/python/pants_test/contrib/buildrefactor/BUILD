@@ -11,3 +11,11 @@ python_tests(
     'tests/python/pants_test/tasks:task_test_base',
   ]
 )
+
+python_tests(
+  name='test_target_split',
+  sources=['test_target_split.py'],
+  dependencies=[
+    'TODO place dependencies'
+  ]
+)

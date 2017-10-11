@@ -8,7 +8,8 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 from pants.goal.task_registrar import TaskRegistrar as task
 
 from pants.contrib.buildrefactor.buildozer import Buildozer
-
+.... import TargetSplit
 
 def register_goals():
   task(name='buildozer', action=Buildozer).install('buildozer')
+  task(name='target_split', action=TargetSplit).install('target-split')
