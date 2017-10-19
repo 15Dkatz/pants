@@ -24,7 +24,6 @@ from pants.core_tasks.targets_help import TargetsHelp
 from pants.core_tasks.what_changed import WhatChanged
 from pants.goal.goal import Goal
 from pants.goal.task_registrar import TaskRegistrar as task
-from pants.build_graph.meta_rename import MetaRename
 
 
 def register_goals():
@@ -51,6 +50,7 @@ def register_goals():
   Goal.register('lint', 'Find formatting errors in source code.')
   Goal.register('fmt', 'Autoformat source code.')
   Goal.register('buildozer', 'Manipulate BUILD files.')
+  Goal.register('meta-rename', 'Rename a target for its dependants.')
 
   # Register tasks.
 
@@ -102,5 +102,3 @@ def register_goals():
   # Processing aliased targets has to occur very early.
   task(name='substitute-aliased-targets', action=SubstituteAliasedTargets).install('bootstrap',
                                                                                    first=True)
-  # Register a task to rename a target.
-  task(name='meta-rename', action=MetaRename).install()

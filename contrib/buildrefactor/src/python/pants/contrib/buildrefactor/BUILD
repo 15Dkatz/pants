@@ -11,11 +11,18 @@ contrib_plugin(
   register_goals=True,
 )
 
-
 python_library(
   name='buildozer',
   sources=['buildozer.py'],
   dependencies = [
     'src/python/pants/binaries:binary_util'
+  ]
+)
+
+python_library(
+  name='meta_rename',
+  sources=['meta_rename.py'],
+  dependencies = [
+    'src/python/pants/backend/jvm/targets:scala'
   ]
 )

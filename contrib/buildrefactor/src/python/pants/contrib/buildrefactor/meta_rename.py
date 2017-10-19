@@ -38,15 +38,27 @@ class MetaRename(Task):
   def update_target_builds(self):
     from_address = Address.parse(self._from)
     to_address = Address.parse(self._to)
-    
+
     self.replace_in_file(from_address.spec_path + '/BUILD', from_address.target_name, to_address.target_name)
 
     from_target = ScalaLibrary(name=from_address.target_name, address=from_address, build_graph=[], **{})
     dependency_graph = self.dependency_graph()
     dependant_addresses = dependency_graph[from_target]
-    
+
     for address in dependant_addresses:
-      self.replace_in_file(address.spec_path + '/BUILD', from_address.target_name, to_address.target_name)
+      # remove old dependency
+      # add new dependency
+      import pdb
+      pdb.set_trace()
+      # self.replace_in_file(address.spec_path + '/BUILD', from_address.target_name, to_address.target_name)
+
+      # if the address is the original address, rename the name field
+        # ./buildozer 'set name new_tmp' //tmp:tmp
+      # else
+
+      # remove the old dependency and add the new one with buildozer
+
+      # replace <attr> <old_value> <new_value>: Replaces old_value with new_value in the list attr. Wildcard * matches all attributes. Lists not containing old_value are not modified.
 
   def dependency_graph(self, scope=''):
     dependency_graph = defaultdict(set)
@@ -59,11 +71,11 @@ class MetaRename(Task):
 
     return dependency_graph
 
-  def replace_in_file(self, _file, old_name, new_name):
-    with open(_file, 'r') as f:
-      source = f.read()
+  # def replace_in_file(self, _file, old_name, new_name):
+  #   with open(_file, 'r') as f:
+  #     source = f.read()
 
-    new_source = source.replace(old_name, new_name)
+  #   new_source = source.replace(old_name, new_name)
 
-    with open(_file, 'w') as new_file:
-      new_file.write(new_source)
+  #   with open(_file, 'w') as new_file:
+  #     new_file.write(new_source)

@@ -1,7 +1,1 @@
-junit_tests(
-    name = "tmp",
-    dependencies = [
-        "a/b",
-        "c/d",
-    ],
-)
+junit_tests(name = "new_tmp")
