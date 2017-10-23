@@ -54,15 +54,6 @@ python_library(
 )
 
 python_library(
-  name = 'aapt_task',
-  sources = ['aapt_task.py'],
-  dependencies = [
-    'contrib/android/src/python/pants/contrib/android/targets:android',
-    'contrib/android/src/python/pants/contrib/android/tasks:android_task',
-  ],
-)
-
-python_library(
   name = 'dx_compile',
   sources = ['dx_compile.py'],
   dependencies = [

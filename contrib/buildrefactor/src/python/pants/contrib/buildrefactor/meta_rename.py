@@ -44,8 +44,12 @@ class MetaRename(Task):
 
     # how to initialize...?
     # how to set/pass in the options?
-    buildozer = Buildozer()
-    buildozer.context.target_roots = self._from
+    # buildozer = Buildozer((self._from), {'options_scope': {'command': 'foo'}})
+    buildozer = Buildozer((self._from), {'options_scope': []})
+    # self.create_task(self.context(target_roots=self.targets['b'])).execute()
+        # return type(subclass_name, (task_type,), {'_stable_name': task_type._compute_stable_name(),
+                                              # 'options_scope': options_scope})
+    # buildozer.context.target_roots = self._from
 
   def update_target_builds(self):
     # from_address = Address.parse(self._from)
