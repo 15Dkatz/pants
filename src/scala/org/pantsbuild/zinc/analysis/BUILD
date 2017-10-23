@@ -4,7 +4,7 @@
 scala_library(
   provides=scala_artifact(
     org='org.pantsbuild',
-    name='zinc-analysis',
+    name='zinc-new_analysis',
     repo=public,
     publication_metadata=pants_library('The SBT incremental compiler for nailgun')
   ),
