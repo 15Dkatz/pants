@@ -48,14 +48,14 @@ class BuildozerTest(TaskTestBase):
 
   def test_custom_command_error(self):
     with self.assertRaises(TaskError):
-      self._test_buildozer_execution({ 'command': 'foo', 'add-dependencies': 'boo' })
+      self._run_buildozer({ 'command': 'foo', 'add-dependencies': 'boo' })
 
   def test_custom_command(self):
     build_file = '{}/b/BUILD'.format(self.build_root)
     new_build_name = 'b_2'
 
     clean_build_file(build_file)
-    self._test_buildozer_execution({ 'command': 'set name {}'.format(new_build_name) })
+    self._run_buildozer({ 'command': 'set name {}'.format(new_build_name) })
     assertInFile(self, new_build_name, build_file)
 
   def test_execute_binary(self):
@@ -72,7 +72,7 @@ class BuildozerTest(TaskTestBase):
     build_file = '{}/{}/BUILD'.format(self.build_root, spec_path)
 
     clean_build_file(build_file)
-    self._test_buildozer_execution({ 'add_dependencies': dependencies_to_add })
+    self._run_buildozer({ 'add_dependencies': dependencies_to_add })
 
     for dependency in dependencies_to_add.split(' '):
       self.assertIn(dependency, self._build_file_dependencies(build_file))
@@ -81,12 +81,12 @@ class BuildozerTest(TaskTestBase):
     build_file = '{}/{}/BUILD'.format(self.build_root, spec_path)
 
     clean_build_file(build_file)
-    self._test_buildozer_execution({ 'remove_dependencies': dependencies_to_remove }, spec_path)
+    self._run_buildozer({ 'remove_dependencies': dependencies_to_remove }, spec_path)
 
     for dependency in dependencies_to_remove.split(' '):
       self.assertNotIn(dependency, self._build_file_dependencies(build_file))
 
-  def _test_buildozer_execution(self, options, root_target='b'):
+  def _run_buildozer(self, options, root_target='b'):
     self.set_options(**options)
     self.create_task(self.context(target_roots=self.targets[root_target])).execute()
 
