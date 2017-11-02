@@ -47,15 +47,11 @@ class MetaRename(Task):
     for address in dependent_addresses:
       try:
         Buildozer.execute_binary(
-          'replace dependencies {}:{} {}:{}'.format(
-            self._from_address.spec_path, self._from_address._target_name,
-            self._to_address.spec_path, self._to_address.target_name),
-          address=address
+          'replace dependencies {} {}'.format(self._from_address.spec, self._to_address.spec), address=address
         )
       except Exception:
         Buildozer.execute_binary(
-          'replace dependencies :{} :{}'.format(self._from_address.target_name, self._to_address.target_name),
-          address=address
+          'replace dependencies {} {}'.format(self._from_address.spec, self._to_address.spec), address=address
         )
 
   def update_original_build_name(self):
