@@ -64,16 +64,13 @@ class Buildozer(Task):
   def _execute_buildozer_script(self, command):
     for root in self.context.target_roots:
       address = root.address
-      buildozer_command = [self._executable, command, '//{}:{}'.format(address._spec_path, address._target_name)]
-      Buildozer._execute_buildozer_command(buildozer_command)
+      Buildozer.execute_binary(command, address, binary=self._executable)
 
   @classmethod
-  def execute_binary(cls, command, address, version='0.4.5'):
-    buildozer_command = [
-      BinaryUtil.Factory.create().select_binary('scripts/buildozer', version, 'buildozer'),
-      command, '//{}:{}'.format(address._spec_path, address._target_name)
-    ]
-    Buildozer._execute_buildozer_command(buildozer_command)
+  def execute_binary(cls, command, address, binary=None, version='0.4.5'):
+    binary = binary if binary else BinaryUtil.Factory.create().select_binary('scripts/buildozer', version, 'buildozer')
+
+    Buildozer._execute_buildozer_command([binary, command, '//{}'.format(address.spec)])
 
   @classmethod
   def _execute_buildozer_command(cls, buildozer_command):
