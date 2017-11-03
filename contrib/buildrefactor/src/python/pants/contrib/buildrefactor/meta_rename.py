@@ -39,18 +39,20 @@ class MetaRename(Task):
     self.update_original_build_name()
 
   def update_dependee_references(self):
-    dependent_addresses = self.dependency_graph()[
+    dependee_targets = self.dependency_graph()[
       Target(name=self._from_address.target_name, address=self._from_address, build_graph=[], **{})
     ]
 
-    for address in dependent_addresses:
+    for concrete_target in dependee_targets:
       try:
         Buildozer.execute_binary(
-          'replace dependencies {} {}'.format(self._from_address.spec, self._to_address.spec), address=address
+          'replace dependencies {} {}'.format(self._from_address.spec, self._to_address.spec),
+          address=concrete_target.address
         )
       except Exception:
         Buildozer.execute_binary(
-          'replace dependencies {} {}'.format(self._from_address.spec, self._to_address.spec), address=address
+          'replace dependencies :{} :{}'.format(self._from_address.target_name, self._to_address.target_name),
+          address=concrete_target.address
         )
 
   def update_original_build_name(self):
@@ -63,6 +65,6 @@ class MetaRename(Task):
       target = self.context.build_graph.get_target(address)
 
       for dependency in target.dependencies:
-        dependency_graph[dependency].add(address)
+        dependency_graph[dependency].add(target.concrete_derived_from)
 
     return dependency_graph
