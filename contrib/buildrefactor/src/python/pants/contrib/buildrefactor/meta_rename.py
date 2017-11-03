@@ -7,9 +7,9 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 
 from collections import defaultdict
 
-from pants.backend.jvm.targets.scala_library import ScalaLibrary
 from pants.base.specs import DescendantAddresses
 from pants.build_graph.address import Address
+from pants.build_graph.target import Target
 from pants.contrib.buildrefactor.buildozer import Buildozer
 from pants.task.task import Task
 
@@ -41,7 +41,7 @@ class MetaRename(Task):
   def update_dependee_references(self):
     dependency_graph = self.dependency_graph()
     dependent_addresses = dependency_graph[
-      ScalaLibrary(name=self._from_address.target_name, address=self._from_address, build_graph=[], **{})
+      Target(name=self._from_address.target_name, address=self._from_address, build_graph=[], **{})
     ]
 
     for address in dependent_addresses:
