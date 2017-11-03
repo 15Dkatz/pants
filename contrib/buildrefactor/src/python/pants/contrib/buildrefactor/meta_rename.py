@@ -39,8 +39,7 @@ class MetaRename(Task):
     self.update_original_build_name()
 
   def update_dependee_references(self):
-    dependency_graph = self.dependency_graph()
-    dependent_addresses = dependency_graph[
+    dependent_addresses = self.dependency_graph()[
       Target(name=self._from_address.target_name, address=self._from_address, build_graph=[], **{})
     ]
 

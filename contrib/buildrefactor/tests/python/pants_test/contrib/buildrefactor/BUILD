@@ -22,7 +22,7 @@ python_tests(
 
 
 python_tests(
-  name='meta_rename',
+  name='meta-rename',
   sources=['test_meta_rename.py'],
   dependencies=[
     'contrib/buildrefactor/src/python/pants/contrib/buildrefactor:buildozer',
